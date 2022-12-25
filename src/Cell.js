@@ -9,8 +9,9 @@ function Cell({cellData}) {
 
     return (
         <div className={className}>
-            {cellData.set}
+            {/*{cellData.set}*/}
             {/*| {cellData.step}*/}
+            <span className="label">{cellData.label}</span>
         </div>
     );
 }

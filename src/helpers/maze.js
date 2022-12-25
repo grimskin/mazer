@@ -267,8 +267,37 @@ const makeMaze = (width, height, startX, startY, endX, endY) => {
     return maze;
 };
 
+const placeWord = (maze, word) => {
+    const route = maze.route;
+
+    route[0].label = word.substring(0,1);
+    route[route.length-1].label = word.substring(word.length-1);
+
+    const step = route.length / (word.length - 1);
+    for (let i=1; i<(word.length-1); i++) {
+        route[Math.floor(i*step)].label = word.substring(i, i + 1);
+    }
+};
+
+const placeLetters = (maze, letters) => {
+    const cycles = Math.ceil(maze.width * maze.height / 6);
+
+    for (let i=0; i<cycles; i++) {
+        const x = Math.floor(Math.random() * maze.width) + 1;
+        const y = Math.floor(Math.random() * maze.height) + 1;
+
+        const cell = getCell(maze.cells, x, y);
+        if (cell.onRoute) continue;
+        if (cell.label) continue;
+
+        cell.label = letters[Math.floor(Math.random() * letters.length)];
+    }
+};
+
 export {
     getCell,
     makeKey,
     makeMaze,
+    placeWord,
+    placeLetters,
 };

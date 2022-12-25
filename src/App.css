@@ -55,30 +55,46 @@ div.page div.row {
   flex-grow: 1;
 }
 
-div.page div.row div.cell {
+div.page div.placeholder-row {
+  display: flex;
+  flex-direction: row;
+}
+
+div.page div.row.spacer {
+  min-height: 30px;
+}
+
+div.page div.cell {
   box-sizing: border-box;
   border-width: 2px;
   border-style: solid;
-  border-color: lightcyan;
+  /*border-color: lightcyan;*/
+  border-color: #fff;
   min-width: 5rem;
   min-height: 5rem;
   flex-grow: 1;
   font-size: 12px;
 }
 
-div.page div.row div.cell.rw {
-  border-right-color: #61dafb;
+div.page div.cell.rw {
+  border-right-color: darkblue;
 }
-div.page div.row div.cell.lw {
-  border-left-color: #61dafb;
+div.page div.cell.lw {
+  border-left-color: darkblue;
 }
-div.page div.row div.cell.tw {
-  border-top-color: #61dafb;
+div.page div.cell.tw {
+  border-top-color: darkblue;
 }
-div.page div.row div.cell.bw {
-  border-bottom-color: #61dafb;
+div.page div.cell.bw {
+  border-bottom-color: darkblue;
 }
 
-div.page div.row div.cell.route {
+div.page div.cell.route {
   background-color: lightcyan;
+}
+
+div.page div.cell span.label {
+  line-height: 96px;
+  font-size: 48px;
+  text-transform: uppercase;
 }
