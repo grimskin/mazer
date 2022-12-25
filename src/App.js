@@ -1,12 +1,17 @@
 import './App.css';
-import { makeCells, getCell, makeKey, makeMaze } from './helpers/maze';
+import { getCell, makeKey, makeMaze } from './helpers/maze';
 import Cell from "./Cell";
 
-const width = 3;
-const height = 3;
+const width = 9;
+const height = 9;
 
-const cells = makeCells(width, height);
-const maze = makeMaze(cells, width, height);
+const sx = 5,
+        sy = 1,
+        ex = 5,
+        ey = 9;
+
+const maze = makeMaze(width, height, sx, sy, ex, ey);
+const cells = maze.cells;
 
 function App() {
     let grid = [];

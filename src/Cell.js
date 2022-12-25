@@ -5,7 +5,7 @@ function Cell({cellData}) {
     if (cellData.topWall) className += ' tw';
     if (cellData.bottomWall) className += ' bw';
 
-    return <div className={className}></div>;
+    return <div className={className}>{cellData.set}</div>;
 }
 
 export default Cell;
