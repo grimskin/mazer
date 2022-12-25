@@ -5,7 +5,14 @@ function Cell({cellData}) {
     if (cellData.topWall) className += ' tw';
     if (cellData.bottomWall) className += ' bw';
 
-    return <div className={className}>{cellData.set}</div>;
+    if (cellData.onRoute) className += ' route';
+
+    return (
+        <div className={className}>
+            {cellData.set}
+            {/*| {cellData.step}*/}
+        </div>
+    );
 }
 
 export default Cell;

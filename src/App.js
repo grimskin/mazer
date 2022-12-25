@@ -6,9 +6,9 @@ const width = 9;
 const height = 9;
 
 const sx = 5,
-        sy = 1,
+        sy = 9,
         ex = 5,
-        ey = 9;
+        ey = 1;
 
 const maze = makeMaze(width, height, sx, sy, ex, ey);
 const cells = maze.cells;
