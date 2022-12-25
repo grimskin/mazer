@@ -58,15 +58,15 @@ const makeWall = (cells, x1, y1, x2, y2) => {
     };
 };
 
-const makeWalls = (cells, width, height) => {
+const makeWalls = (maze) => {
     const walls = {};
 
-    for (let x=1; x<=width; x++) {
-        for (let y = 1; y <= height; y++) {
-            if (x > 1) addWall(walls, makeWall(cells, x-1, y, x, y));
-            if (x < width) addWall(walls, makeWall(cells, x, y, x+1, y));
-            if (y > 1) addWall(walls, makeWall(cells, x, y-1, x, y));
-            if (y < height) addWall(walls, makeWall(cells, x, y, x, y+1));
+    for (let x=1; x<=maze.width; x++) {
+        for (let y = 1; y <= maze.height; y++) {
+            if (x > 1) addWall(walls, makeWall(maze.cells, x-1, y, x, y));
+            if (x < maze.width) addWall(walls, makeWall(maze.cells, x, y, x+1, y));
+            if (y > 1) addWall(walls, makeWall(maze.cells, x, y-1, x, y));
+            if (y < maze.height) addWall(walls, makeWall(maze.cells, x, y, x, y+1));
         }
     }
 
@@ -77,79 +77,34 @@ const addWall = (walls, wall) => {
     walls[wall.key] = wall;
 };
 
-const makeExit = (cell, width, height) => {
+const makeExit = (maze, cell) => {
     if (cell.x === 1) cell.leftWall = false;
     if (cell.y === 1) cell.topWall = false;
-    if (cell.x === width) cell.rightWall = false;
-    if (cell.y === height) cell.bottomWall = false;
+    if (cell.x === maze.width) cell.rightWall = false;
+    if (cell.y === maze.height) cell.bottomWall = false;
 };
 
-const makeMaze = (width, height, startX, startY, endX, endY) => {
-    const maze = {
-        startX: startX,
-        startY: startY,
-        endX: endX,
-        endY: endY,
-    };
+const breakWall = (maze, wall) => {
+    if (wall.left) {
+        wall.left.rightWall = false;
+        wall.right.leftWall = false;
+    } else {
+        wall.top.bottomWall = false;
+        wall.bottom.topWall = false;
+    }
 
-    const cells = makeCells(width, height);
-    maze.cells = cells;
-    const start = getCell(cells, startX, startY);
-    start.isStart = true;
-    const end = getCell(cells, endX, endY);
-    end.isEnd = true;
+    delete maze.walls[wall.key];
 
-    makeExit(start, width, height);
-    makeExit(end, width, height);
+    let setA = wall.neighbourA.set;
+    let setB = wall.neighbourB.set;
+    if (setA > setB) {
+        let setC = setA; setA = setB; setB = setC;
+    }
 
-    maze.walls = makeWalls(cells, width, height);
-
-    const cellsArr = [];
     for (let cellId in maze.cells) {
-        cellsArr.push(maze.cells[cellId]);
+        if (maze.cells[cellId].set === setB) maze.cells[cellId].set = setA;
     }
-
-    let wallsArr = [];
-    for (let wallId in maze.walls) {
-        wallsArr.push(maze.walls[wallId]);
-    }
-    wallsArr = fisherYatesShuffle(wallsArr);
-    let limit = wallsArr.length - 1;
-
-    while (start.set != end.set && limit > 0) {
-        limit--;
-        const chosenWall = wallsArr.pop();
-            let setA, setB;
-            if (chosenWall.left) {
-                setA = chosenWall.left.set;
-                setB = chosenWall.right.set;
-            } else {
-                setA = chosenWall.top.set;
-                setB = chosenWall.bottom.set;
-            }
-
-            if (setA == setB) continue;
-
-            if (chosenWall.left) {
-                chosenWall.left.rightWall = false;
-                chosenWall.right.leftWall = false;
-            } else {
-                chosenWall.top.bottomWall = false;
-                chosenWall.bottom.topWall = false;
-            }
-
-            if (setA > setB) {
-                let setC = setA; setA = setB; setB = setC;
-            }
-            delete maze.walls[chosenWall.key];
-
-            cellsArr.map(cell => {
-                if (cell.set == setB) cell.set = setA; return cell;
-            });
-    }
-
-    return maze;
-};
+}
 
 const setCell = (cells, x, y, cell) => {
     let key = makeKey(x, y);
@@ -164,6 +119,45 @@ const getCell = (cells, x, y) => {
 
 const makeKey = (x, y) => {
     return x + '.' + y;
+};
+
+const makeMaze = (width, height, startX, startY, endX, endY) => {
+    const maze = {
+        startX: startX,
+        startY: startY,
+        endX: endX,
+        endY: endY,
+        width: width,
+        height: height,
+    };
+
+    maze.cells = makeCells(width, height);
+    const start = getCell(maze.cells, startX, startY);
+    start.isStart = true;
+    const end = getCell(maze.cells, endX, endY);
+    end.isEnd = true;
+
+    makeExit(maze, start);
+    makeExit(maze, end);
+
+    maze.walls = makeWalls(maze);
+
+    let wallsArr = [];
+    for (let wallId in maze.walls) {
+        wallsArr.push(maze.walls[wallId]);
+    }
+    wallsArr = fisherYatesShuffle(wallsArr);
+
+    let chosenWall;
+    // eslint-disable-next-line no-cond-assign
+    while (chosenWall = wallsArr.pop()) {
+        if (chosenWall.neighbourA.set === chosenWall.neighbourB.set) continue;
+
+        breakWall(maze, chosenWall);
+        if (start.set === end.set) break;
+    }
+
+    return maze;
 };
 
 export {
